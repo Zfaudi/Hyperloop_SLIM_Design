@@ -1,4 +1,4 @@
-%% Flow chart part B
+%% Flow chard part B
 
 % user inputs
 
@@ -8,5 +8,5 @@ f = input('Electrical frequency: ') %input for frequency [Hz]
 p = input('Number of poles: ') %input for number of poles
 q_1 = input('Number of slot-per-pole-per-phase: ') %input for number of slot per-pole-per-phase
 S = input('Rated slip: ') %input for rated slip
-W_s = input('Stator width [m]: ') %input for stator width [m]
-J_1 = input('Stator current density [A/m^2]: ') %input for stator current density [A/m^2]
+W_s = input('Stator width [m]: ') %input for stator width
+J_1 = input('Stator current density: ') %input for stator current density
