@@ -8,13 +8,16 @@ B_ymax=input('Max yoke flux density, B_ymax, Wb/m^2)   ');  %Input max yoke flux
 %% Step B
 % user inputs
 m = input('Number of Phases: ');                    %input for number of phases 
-Vline = input('Line-to-Line voltage [Hz]: ');       %input for line to line voltage
+Vline = input('Line-to-Line voltage: ');       %input for line to line voltage
 f = input('Electrical frequency: ');                %input for frequency [Hz]
 p = input('Number of poles: ');                     %input for number of poles
 q_1 = input('Number of slot-per-pole-per-phase: '); %input for number of slot per-pole-per-phase
 S = input('Rated slip: ');                          %input for rated slip
 W_s = input('Stator width [m]: ');                  %input for stator width [m]
 J_1 = input('Stator current density [A/m^2]: ');    %input for stator current density [A/m^2]
+g_m = input('Air gap [m]: ');                       %Input desired mechanical air gap
+d = input('Rotor outer wall thickness [m]: ');      %input aluminum thickness
+theta_p = input('Coil span [electrical degrees]: ');
 
 %% Step C 
 Fprime_s=input('Target electromagnetic thrust, Fs   ');
@@ -22,7 +25,7 @@ V_r=input('Rated rotor velocity, Vr   ');
 
 %% Step D
 % calculate synchronous velocity (V sub s)
-V_s = 2*f*tau;
+V_s = V_r/(1-S);
 
 %% Step E
 tau=V_s/2*f;            %calculate the pole pitch
@@ -43,6 +46,7 @@ eacosp = 0.69420; %eta*cos(phi) = between 0 and 1
 
 %% Step I
 % estimate rated RMS stator current, I-prime sub 1
+V_1 = Vline/sqrt(3);
 Iprime_1 = (Fprime_s * V_r)/(m*V_1*eacosp); 
 
 %% Step J
@@ -59,10 +63,37 @@ A_s = (10/7) * N_c * A_w;
 %% Step K
 
 g_0 = g_m + d; %magnetic air gap
-gamma = (4/pi)*(w_s/(2*g_0)*atan(w_s/(2*g_0)) - ln(sqrt(1+(w_s/(2*g_0))^2)));
+gamma = (4/pi)*(w_s/(2*g_0)*atan(w_s/(2*g_0)) - log(sqrt(1+(w_s/(2*g_0))^2)));
 k_c = lambda / (lambda - gamma*g_0); %Carter's coefficient
 g_e = k_c * g_0; %effective air gap
 G = (2*mu_0*f*(tau^2)) / (pi*(rho_r/d)*g_e); %goodness factor
+
+%% Step L
+l_w1 = 2*(W_s+l_ce);
+l_w = N_1*l_w1;
+a = pi/(m*q_1);
+k_p = sin(theta_p/2);
+k_d = (sin((q_1*a)/2)/q_1*sin(a/2));
+W_se = W_s + g_0;
+k_w = k_p*k_d;
+
+%% Step M
+R_1 = (lambda_w*((l_w)/(A_wt)));
+
+lambda_s = ((h_s)*(1+3*k_p))/12*W_s
+lambda_e = 0.3*((3*k_p)-1)
+lambda_d = 5*((G_e)/(W_s))/5 + 4*((G_0)/(W_s))
+X_1 = (2*mu_0*pi*f*((lambda_s*(1+(3/p))+lambda_d)*(W_s/q_1)+lambda_e*l_ce)*(N_1)^2)/p
+
+X_m = (24*mu_0*pi*f*w_se*k_w*((n_1)^2)*tau)/(pi^2)*p*g
+R_2 = (x_m)/(G)
+
+%% Step N
+Z = R_1 + (j*X_1) + (j*((R_2/S)*X_m))/((R_2/S)+ J*X_m)
+
+cos_phi = F_s*2*pi*f_1 + 3*R_1*(I_1)^2
+I_1 = (V_1)/abs(Z)
+I_m = (I_1 * R_2)/sqrt((R_2)^2 + (S*X_m)^2)
 
 %% Step O 
 S=(V_s-V_r)/V_s;                %Calculating slip
@@ -90,13 +121,26 @@ w_t=lambda-w_s;
 
 %% Step t
 %recalculating all these variable to recalculate G (goodness factor)
-g_e=_c*g_0;                    %Effective air gap
+g_e=k_c*g_0;                    %Effective air gap
 k_c=(lambda)/(lambda-gamma*g_0) %carter's coefficient
 W_se= W_s+ g_0;                 %Equivalent stator width
+
+%% Step U
+R_1 = (lambda_w*((l_w)/(A_wt)));
+X_1 = (2*mu_0*pi*f*((lambda_s*(1+(3/p))+lambda_d)*(W_s/q_1)+lambda_e*l_ce)*(N_1)^2)/p
+X_m = (24*mu_0*pi*f*w_se*k_w*((n_1)^2)*tau)/(pi^2)*p*g
+R_2 = (x_m)/(G)
 
 %% Step V
 W_tmin=((2*sqrt(2))*m*k_w*N_i*I_m*mu_0*lambda)/(pi*g_e*p*B_tmax);  %minimum tooth density
 %if minimum is greater than the actual width, change number of parallel wires and their arrangement inside  slot
+
+%% Step W
+J_1 = (I_l)/(A_w)
+
+%% Step_X
+
+h_y = (flux_p)/(2*B_ymax*W_s)
 
 %% Step Y
 %%At Rated Vc this calculates the finals values for Actual SLIM thrust,F_S,

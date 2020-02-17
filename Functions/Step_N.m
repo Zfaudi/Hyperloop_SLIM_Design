@@ -1,5 +1,5 @@
-%% Step N %%
- Z = R_1 + (j*X_1) + (j*((R_2/S)*X_m))/((R_2/S)+ J*X_m)
+%% Step N
+Z = R_1 + (j*X_1) + (j*((R_2/S)*X_m))/((R_2/S)+ J*X_m)
 
 cos_phi = F_s*2*pi*f_1 + 3*R_1*(I_1)^2
 I_1 = (V_1)/abs(Z)

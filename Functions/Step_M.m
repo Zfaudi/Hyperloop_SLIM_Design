@@ -1,4 +1,4 @@
-%% Step M %%
+%% Step M
 R_1 = (lambda_w*((l_w)/(A_wt)));
 
 lambda_s = ((h_s)*(1+3*k_p))/12*W_s
